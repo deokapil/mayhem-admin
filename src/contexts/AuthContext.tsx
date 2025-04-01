@@ -1,12 +1,14 @@
-// contexts/AuthContext.tsx
+"use client";
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "@/schemas/env";
 
 interface User {
   id: number;
   email: string;
-  name: string;
-  role: string;
+  first_name: string;
+  last_name: string;
 }
 
 interface AuthContextType {
@@ -41,7 +43,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchUser = async (authToken: string) => {
     try {
-      const response = await fetch("http://your-rails-api.com/api/v1/me", {
+      const response = await fetch(`${apiUrl}/me`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -67,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://your-rails-api.com/api/v1/login", {
+      const response = await fetch(`${apiUrl}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       const data = await response.json();
-      const { token: authToken, user: userData } = data;
+      const { token: authToken, admin: userData } = data;
 
       // Save token to localStorage
       localStorage.setItem("token", authToken);
