@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     // Check for token in localStorage on initial load
-    const storedToken = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("auth_token");
     if (storedToken) {
       setToken(storedToken);
       fetchUser(storedToken);
@@ -54,12 +54,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setUser(userData);
       } else {
         // Token might be invalid or expired
-        localStorage.removeItem("token");
+        localStorage.removeItem("auth_token");
         setToken(null);
       }
     } catch (error) {
       console.error("Failed to fetch user:", error);
-      localStorage.removeItem("token");
+      localStorage.removeItem("auth_token");
       setToken(null);
     } finally {
       setIsLoading(false);
