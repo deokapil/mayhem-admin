@@ -3,10 +3,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Define which paths require authentication
-const protectedPaths = ["/dashboard", "/profile", "/admin"];
+const protectedPaths = ["/", "/profile", "/admin"];
 
 // Define paths that are always accessible
-const publicPaths = ["/", "/login"];
+const publicPaths = ["/login"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -16,13 +16,15 @@ export function middleware(request: NextRequest) {
     (path) => pathname === path || pathname.startsWith(`${path}/`)
   );
 
+  const token = request.cookies.get("auth_token")?.value;
+  if (token && pathname.startsWith("/login")) {
+    const dashboardUrl = new URL("/", request.url);
+    return NextResponse.redirect(dashboardUrl);
+  }
   // If this is a public path or not a protected path, allow the request
   if (publicPaths.some((path) => pathname === path) || !isPathProtected) {
     return NextResponse.next();
   }
-
-  // Check for the auth token cookie
-  const token = request.cookies.get("auth_token")?.value;
 
   // If there's no token and we're on a protected path, redirect to login
   if (!token && isPathProtected) {

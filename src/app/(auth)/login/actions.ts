@@ -1,15 +1,12 @@
 "use server";
 
-import { loginUser } from "@/lib/auth";
+import { clearAuthCookie, loginUser } from "@/lib/auth";
 import { LoginFormValues } from "@/schemas/auth";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
-type FormState = { error?: string } | undefined;
+type FormState = { error?: string; data?: any } | undefined;
 
 export async function loginAction(values: LoginFormValues): Promise<FormState> {
-  let redirectUrl = null;
   try {
     // Use the loginUser function from our auth library
     const authResponse = await loginUser(values.email, values.password);
@@ -29,12 +26,12 @@ export async function loginAction(values: LoginFormValues): Promise<FormState> {
       path: "/",
       sameSite: "strict",
     });
-    redirectUrl = "/dashboard";
+    return { data: authResponse.admin };
   } catch (err: any) {
     return { error: err.message };
   }
-  if (redirectUrl) {
-    revalidatePath(redirectUrl);
-    redirect(redirectUrl);
-  }
+}
+
+export async function logoutUser() {
+  await clearAuthCookie();
 }

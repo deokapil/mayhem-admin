@@ -1,3 +1,4 @@
+"use server";
 // lib/auth.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { cookies } from "next/headers";
@@ -46,13 +47,8 @@ export const clearAuthCookie = async () => {
   cookieStore.delete("auth_token");
 };
 
-// Helper to check if user is authenticated
-export function isAuthenticated(): boolean {
-  return !!getAuthToken();
-}
-
 // Middleware to protect API routes
-export function withAuth(
+export async function withAuth(
   handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {

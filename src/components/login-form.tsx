@@ -27,6 +27,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LoginFormValues, loginSchema } from "@/schemas/auth";
 import { loginAction } from "@/app/(auth)/login/actions";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function LoginForm({
   className,
@@ -34,7 +35,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const auth = useAuth();
 
   // Initialize form with React Hook Form and Zod resolver
   const form = useForm<LoginFormValues>({
@@ -50,10 +51,15 @@ export function LoginForm({
     setIsLoading(true);
     setError(null);
 
-    const errResp = await loginAction(values);
-    if (errResp) {
-      setError(errResp.error || "An error occurred during login");
+    const resp = await loginAction(values);
+    console.log(resp);
+    if (resp?.error) {
+      setError(resp.error || "An error occurred during login");
       setIsLoading(false);
+    } else {
+      if (resp?.data) {
+        auth.login(resp.data);
+      }
     }
   };
 
