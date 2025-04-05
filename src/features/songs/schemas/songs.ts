@@ -18,3 +18,18 @@ export const songSchema = z.object({
   before_archive_path: z.string().max(255).optional(),
   public_url: z.string().optional(),
 });
+
+export const songFilters = z.object({
+  title: z.string().max(255).optional(),
+  artist: z.string().max(255).optional(),
+  genre: z.array(z.number()).optional(),
+  eras: z.array(z.number()).optional(),
+  active: z.boolean().optional(),
+  page: z.number().default(0),
+  limit: z.number().default(50),
+  sort: z.string().optional(),
+  direction: z.enum(["asc", "desc"]).optional(),
+});
+
+export type songSchemaType = z.infer<typeof songSchema>;
+export type songFilterType = z.infer<typeof songFilters>;
